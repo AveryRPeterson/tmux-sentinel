@@ -1,0 +1,21 @@
+session: workstation
+root: ~/Projects
+
+windows:
+  - name: code
+    layout: main-vertical
+    panes:
+      - type: pane
+        commands:
+          - cd tmux-sentinel
+          - clear
+      - type: pane
+        commands:
+          - cd tmux-interaction
+          - clear
+
+  - name: monitor
+    panes:
+      - type: pane
+        commands:
+          - btop
