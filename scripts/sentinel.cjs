@@ -50,7 +50,14 @@ const commands = {
     }
 
     const configFile = path.join(CONFIG_DIR, `${sessionName}.yml`);
-    const result = runCommand('smug', ['stop', sessionName, '--file', configFile]);
+    let result;
+    if (fs.existsSync(configFile)) {
+      result = runCommand('smug', ['stop', sessionName, '--file', configFile]);
+    } else {
+      console.log(`No declarative config found for '${sessionName}', performing standard hibernation...`);
+      result = runCommand('tmux', ['kill-session', '-t', sessionName]);
+    }
+
     if (result.status === 0) {
       console.log(`Success: Session '${sessionName}' hibernated.`);
     } else {
