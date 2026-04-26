@@ -1,46 +1,47 @@
-# tmux Sentinel
+# tmux-sentinel 🛡️
 
-Declarative tmux session management, app-aware recovery, and native persistence for Gemini CLI.
-
-## Overview
-
-`tmux-sentinel` provides a high-level orchestration layer for tmux environments. It uses `smug` for declarative layouts and `sesh` for dynamic session jumping.
+App-aware tmux session management and layout recovery. Optimized for both desktop Linux and Android (Termux).
 
 ## Features
-
-- **Declarative Thawing**: Restore complex layouts from YAML files.
-- **App-Aware Hibernation**: Gracefully save application state (e.g., Neovim) before closing sessions.
-- **Dynamic Project Jumping**: Instantly switch to any project directory with optimized session management.
-- **Drift Detection**: Sync current tmux state with declarative configs.
+- **Declarative Thawing**: Restore complex layouts via `smug`.
+- **App-Aware Hibernation**: Gracefully save state (e.g., Neovim) before closing.
+- **Smart Jumping**: Instant project switching via `sesh`.
+- **Cross-Platform**: Automatic architecture detection for `x86_64` and `arm64`.
 
 ## Installation
 
-1. Clone this repository.
-2. Run `bash scripts/install_deps.sh` to install `smug` and `sesh`.
-3. Add the skill to your Gemini CLI configuration.
+```bash
+git clone https://github.com/AveryRPeterson/tmux-sentinel.git
+cd tmux-sentinel
+npm install
+```
+*The `npm install` step automatically downloads the required `smug` and `sesh` binaries for your architecture.*
 
 ## Usage
 
-### Thaw an environment
+### Thaw an Environment
+Restores a session defined in `configs/<name>.yml`.
 ```bash
-node scripts/sentinel.cjs thaw <config-name>
+sentinel thaw workstation
 ```
 
-### Hibernate a session
+### Hibernate a Session
+Runs pre-save hooks and closes the session.
 ```bash
-node scripts/sentinel.cjs hibernate <session-name>
+sentinel hibernate workstation
 ```
 
-### Jump to a project
+### Jump to a Project
+Quickly switch to a directory.
 ```bash
-node scripts/sentinel.cjs jump <path>
+sentinel jump ~/Projects/my-app
+```
+
+### Sync State
+Ensures the current tmux windows match the config.
+```bash
+sentinel sync workstation
 ```
 
 ## Configuration
-
-Place your `smug` configuration files in the `configs/` directory.
-
-## App-Aware Hooks
-
-Custom hooks for saving state are located in `scripts/hooks/`.
-- `pre_hibernate.sh`: Scans for running processes and sends save commands.
+Layouts are stored in `configs/` using the [smug](https://github.com/ivaaaan/smug) YAML schema.

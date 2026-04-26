@@ -100,9 +100,21 @@ const commands = {
 if (require.main === module) {
   const args = process.argv.slice(2);
   const command = args[0];
-  if (!commands[command]) {
-    console.log(`Available commands: ${Object.keys(commands).join(', ')}`);
-    process.exit(1);
+  
+  if (!command || command === '--help' || command === '-h' || !commands[command]) {
+    console.log(`
+tmux-sentinel 🛡️
+
+Usage: sentinel <command> [args]
+
+Commands:
+  thaw <config>      Restore a session layout from configs/
+  hibernate <name>   Save app state and close a session
+  jump <path>        Switch to a project directory using sesh
+  sync <config>      Sync current tmux state with declarative config
+  --help, -h         Show this help menu
+    `);
+    process.exit(command ? 0 : 1);
   }
   commands[command](...args.slice(1));
 }
