@@ -40,12 +40,22 @@ fi
 if ! command -v sesh &> /dev/null; then
     echo "Installing sesh for $ARCH..."
     SESH_VERSION="2.26.0"
-    # Sesh uses different naming for arm64 in releases sometimes, checking...
-    # Based on joshmedeski/sesh releases: sesh_Linux_arm64.tar.gz or sesh_Darwin_arm64.tar.gz
-    curl -L "https://github.com/joshmedeski/sesh/releases/download/v${SESH_VERSION}/sesh_${SESH_ARCH}.tar.gz" -o sesh.tar.gz
-    tar -xzf sesh.tar.gz sesh
-    mv sesh "$BIN_DIR/"
-    rm sesh.tar.gz
+    
+    if [[ "$OS" == "linux" ]] && [[ "$ARCH" == "aarch64" ]] && [[ -f "/system/build.prop" ]]; then
+        echo "Android detected. Building sesh from source to ensure compatibility..."
+        if command -v go &> /dev/null; then
+            go install "github.com/joshmedeski/sesh/v2@v${SESH_VERSION}"
+            cp "$HOME/go/bin/sesh" "$BIN_DIR/"
+        else
+            echo "Error: golang is required to build sesh on Android. Please install it with 'pkg install golang'."
+            exit 1
+        fi
+    else
+        curl -L "https://github.com/joshmedeski/sesh/releases/download/v${SESH_VERSION}/sesh_${SESH_ARCH}.tar.gz" -o sesh.tar.gz
+        tar -xzf sesh.tar.gz sesh
+        mv sesh "$BIN_DIR/"
+        rm sesh.tar.gz
+    fi
     chmod +x "$BIN_DIR/sesh"
     echo "sesh installed to $BIN_DIR"
 else

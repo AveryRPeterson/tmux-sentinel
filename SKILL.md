@@ -32,14 +32,24 @@ Quickly switch to a project session.
 Ensure the current tmux windows/panes match the declarative config.
 - `node scripts/sentinel.cjs sync <config-name>`
 
-## Integration with tmux-interaction
-- Use **tmux-sentinel** for macro-level environment setup and recovery.
-- Use **tmux-interaction** for micro-level surgical tasks and TUI interaction within the established environment.
+## Agent-Specific Guidance
 
-## App-Aware Recovery
-The sentinel automatically detects running applications and triggers their native save mechanisms:
-- **Neovim**: Sends `:SessionSave` or equivalent keys.
-- **Shell**: Ensures history is persisted.
+### Headless Operation
+When running as an AI agent, commands like `jump` or `thaw` may report "attachment errors" (e.g., `Failed to attach to tmux session`). **This is expected in non-interactive environments.**
+- The session **is** created successfully even if attachment fails.
+- Do not attempt to retry the attachment.
+- Instead, use the `tmux-interaction` skill to verify and interact with the session.
+
+### Integration with tmux-interaction
+- **Macro-Management (Sentinel)**: Use for environment setup, recovery, and high-level state management.
+- **Micro-Management (Interaction)**: After a `jump` or `thaw`, use the interaction skill to:
+    - Capture pane content (`capture-clean`) to verify the environment.
+    - Send keys to start specific background processes.
+    - Wait for patterns or logs to confirm application readiness.
+
+### Troubleshooting
+- **SIGSYS Errors**: Common on Android/Termux with pre-built binaries. The `install_deps.sh` script handles this by building from source if `go` is available.
+- **Path Issues**: Ensure `~/.local/bin` is in the environment's `PATH`.
 
 ## Configuration
 Declarative layouts are stored in `configs/*.yml` and follow the `smug` configuration schema.
